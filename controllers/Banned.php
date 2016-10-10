@@ -23,12 +23,9 @@ class Banned extends Users
     public function listExtendQuery($query)
     {
         $throttleModel = Auth::createThrottleModel();
-        $bannedCollection = $throttleModel->where('is_banned', true)->get();
-        $banned = [];
-        foreach($bannedCollection as $bannedItem) {
-            $banned[] = $bannedItem->user_id;
-        }
-
-        $query->whereIn('id', $banned);
+        $bannedCollection = $throttleModel->where('is_banned', true)->get()->map(function($item){
+          return $item->user_id;
+        });
+        $query->whereIn('id', $bannedCollection);
     }
 }
